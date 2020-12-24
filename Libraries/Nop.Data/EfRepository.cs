@@ -10,17 +10,18 @@ namespace Nop.Data
 {
     /// <summary>
     /// Entity Framework repository
+    /// 实体框架库
     /// </summary>
     public partial class EfRepository<T> : IRepository<T> where T : BaseEntity
     {
-        #region Fields
+        #region Fields，域，字段，属性
 
         private readonly IDbContext _context;
         private IDbSet<T> _entities;
 
         #endregion
 
-        #region Ctor
+        #region Ctor构造函数
 
         /// <summary>
         /// Ctor
@@ -33,13 +34,14 @@ namespace Nop.Data
 
         #endregion
 
-        #region Utilities
+        #region Utilities自用方法
 
         /// <summary>
         /// Get full error
+        /// 获得完整错误
         /// </summary>
-        /// <param name="exc">Exception</param>
-        /// <returns>Error</returns>
+        /// <param name="exc">Exception异常</param>
+        /// <returns>Error错误</returns>
         protected string GetFullErrorText(DbEntityValidationException exc)
         {
             var msg = string.Empty;
@@ -54,19 +56,21 @@ namespace Nop.Data
         #region Methods
 
         /// <summary>
-        /// Get entity by identifier
+        /// Get entity by identifier按主键获取实体
         /// </summary>
-        /// <param name="id">Identifier</param>
-        /// <returns>Entity</returns>
+        /// <param name="id">Identifier主键</param>
+        /// <returns>Entity类型</returns>
         public virtual T GetById(object id)
         {
             //see some suggested performance optimization (not tested)
+            //请参阅一些建议的性能优化(未测试)
             //http://stackoverflow.com/questions/11686225/dbset-find-method-ridiculously-slow-compared-to-singleordefault-on-id/11688189#comment34876113_11688189
             return this.Entities.Find(id);
         }
 
         /// <summary>
         /// Insert entity
+        /// 插入实体
         /// </summary>
         /// <param name="entity">Entity</param>
         public virtual void Insert(T entity)
@@ -88,6 +92,7 @@ namespace Nop.Data
 
         /// <summary>
         /// Insert entities
+        /// 批量插入实体
         /// </summary>
         /// <param name="entities">Entities</param>
         public virtual void Insert(IEnumerable<T> entities)
@@ -110,6 +115,7 @@ namespace Nop.Data
 
         /// <summary>
         /// Update entity
+        /// 跟新实体
         /// </summary>
         /// <param name="entity">Entity</param>
         public virtual void Update(T entity)
@@ -129,6 +135,7 @@ namespace Nop.Data
 
         /// <summary>
         /// Update entities
+        /// 批量更新实体
         /// </summary>
         /// <param name="entities">Entities</param>
         public virtual void Update(IEnumerable<T> entities)
@@ -148,6 +155,7 @@ namespace Nop.Data
 
         /// <summary>
         /// Delete entity
+        /// 删除实体
         /// </summary>
         /// <param name="entity">Entity</param>
         public virtual void Delete(T entity)
@@ -169,6 +177,7 @@ namespace Nop.Data
 
         /// <summary>
         /// Delete entities
+        /// 批量删除实体
         /// </summary>
         /// <param name="entities">Entities</param>
         public virtual void Delete(IEnumerable<T> entities)
@@ -195,6 +204,7 @@ namespace Nop.Data
 
         /// <summary>
         /// Gets a table
+        /// 获得表
         /// </summary>
         public virtual IQueryable<T> Table
         {
@@ -206,6 +216,7 @@ namespace Nop.Data
 
         /// <summary>
         /// Gets a table with "no tracking" enabled (EF feature) Use it only when you load record(s) only for read-only operations
+        /// 获取一个启用了“无跟踪”的表(EF特性)，仅当你只在只读操作中加载记录时使用它
         /// </summary>
         public virtual IQueryable<T> TableNoTracking
         {
@@ -216,7 +227,7 @@ namespace Nop.Data
         }
 
         /// <summary>
-        /// Entities
+        /// Entities实体集
         /// </summary>
         protected virtual IDbSet<T> Entities
         {

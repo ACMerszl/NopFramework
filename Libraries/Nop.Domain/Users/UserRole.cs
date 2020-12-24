@@ -5,6 +5,7 @@ namespace Nop.Domain.Users
 {
     /// <summary>
     /// Represents a user role
+    /// 表示用户角色
     /// </summary>
     public partial class UserRole : BaseEntity
     {

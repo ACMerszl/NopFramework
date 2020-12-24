@@ -23,20 +23,24 @@ namespace Nop.Web.Framework
 {
     /// <summary>
     /// Dependency registrar
+    /// 依赖注册接口
     /// </summary>
     public class DependencyRegistrar : IDependencyRegistrar
     {
         /// <summary>
         /// Register services and interfaces
+        /// DepeRegister服务和接口
         /// </summary>
-        /// <param name="builder">Container builder</param>
-        /// <param name="typeFinder">Type finder</param>
-        /// <param name="config">Config</param>
+        /// <param name="builder">Container builder容器建造者</param>
+        /// <param name="typeFinder">Type finder 类型查找器</param>
+        /// <param name="config">Config配置</param>
         public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, NopConfig config)
         {
             //HTTP context and other related stuff
+            //HTTP上下文和其他相关的东西
             builder.Register(c =>
                 //register FakeHttpContext when HttpContext is not available
+                //当HttpContext不可用时注册FakeHttpContext
                 HttpContext.Current != null ?
                 (new HttpContextWrapper(HttpContext.Current) as HttpContextBase) :
                 (new FakeHttpContext("~/") as HttpContextBase))
@@ -120,6 +124,7 @@ namespace Nop.Web.Framework
 
         /// <summary>
         /// Order of this dependency registrar implementation
+        /// 此依赖关系注册器实现的顺序
         /// </summary>
         public int Order
         {

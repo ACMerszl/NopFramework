@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
@@ -31,18 +32,31 @@ namespace Nop.Data.Initializers
             }
             if (dbExists)
             {
-                bool createTables;
+                string sql = string.Empty;
+                string countSql = string.Empty;
+                if (context.Database.Connection.GetType() == typeof(MySqlConnection))
+                {
+                    sql = string.Format("SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_schema = '{0}'", context.Database.Connection.Database);
+                    countSql = string.Format("SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_schema = '{0}'", context.Database.Connection.Database);
+                }
+                else
+                {
+                    sql = @"SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE'";
+                    countSql = @"SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' ";
+                }
+
+                bool createTables = false;
                 if (_tablesToValidate != null && _tablesToValidate.Length > 0)
                 {
                     //we have some table names to validate
-                    var existingTableNames = new List<string>(context.Database.SqlQuery<string>("SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE'"));
-                    createTables = !existingTableNames.Intersect(_tablesToValidate, StringComparer.InvariantCultureIgnoreCase).Any();
+                    var existingTableNames = new List<string>(context.Database.SqlQuery<string>(sql));
+                    createTables = existingTableNames.Intersect(_tablesToValidate, StringComparer.InvariantCultureIgnoreCase).Count() == 0;
                 }
                 else
                 {
                     //check whether tables are already created
                     int numberOfTables = 0;
-                    foreach (var t1 in context.Database.SqlQuery<int>("SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' "))
+                    foreach (var t1 in context.Database.SqlQuery<int>(countSql))
                         numberOfTables = t1;
 
                     createTables = numberOfTables == 0;
@@ -52,6 +66,24 @@ namespace Nop.Data.Initializers
                 {
                     //create all tables
                     var dbCreationScript = ((IObjectContextAdapter)context).ObjectContext.CreateDatabaseScript();
+
+                    //Need to fix some of the script for MySql
+                    if (context.Database.Connection.GetType() == typeof(MySqlConnection))
+                    {
+                        //MySql doesn't support varbinary(MAX) so it generates the script with varbinary only without
+                        //a size specified, so change to longblob...could probably do this in the mapping for these properties instead
+                        dbCreationScript = dbCreationScript.Replace("`PictureBinary` varbinary,", "`PictureBinary` LONGBLOB,");
+                        dbCreationScript = dbCreationScript.Replace("`DownloadBinary` varbinary,", "`DownloadBinary` LONGBLOB,");
+
+                        //Order is a keyword so need to put in quotes
+                        dbCreationScript = dbCreationScript.Replace("REFERENCES Order (Id)", "REFERENCES `Order` (Id)");
+
+                        //Some of the constraint names are too long for MySql, so shorten them
+                        //dbCreationScript = dbCreationScript.Replace("ProductReview_TypeConstraint_From_CustomerContent_To_ProductReview", "ProductReview_CustomerContent_ProductReview");
+                        //dbCreationScript = dbCreationScript.Replace("PollVotingRecord_TypeConstraint_From_CustomerContent_To_PollVotingRecord", "PollVotingRecord_CustomerContent_PollVotingRecord");
+                        //dbCreationScript = dbCreationScript.Replace("ProductReviewHelpfulness_TypeConstraint_From_CustomerContent_To_ProductReviewHelpfulness", "ProductReviewHelpfulnes_CustomerContent_ProductReviewHelpfulnes");
+                    }
+
                     context.Database.ExecuteSqlCommand(dbCreationScript);
 
                     //Seed(context);

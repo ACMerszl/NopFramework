@@ -6,6 +6,7 @@ namespace Nop.Core.Configuration
 {
     /// <summary>
     /// Represents a NopConfig
+    /// 代表一个NopConfig
     /// </summary>
     public partial class NopConfig : IConfigurationSectionHandler
     {

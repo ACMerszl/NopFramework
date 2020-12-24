@@ -4,12 +4,18 @@ using Nop.Core.Data;
 
 namespace Nop.Data
 {
+    /// <summary>
+    /// EF数据库配置
+    /// </summary>
     public partial class EfDataProviderManager : BaseDataProviderManager
     {
         public EfDataProviderManager(DataSettings settings):base(settings)
         {
         }
-
+        /// <summary>
+        /// 加载数据库
+        /// </summary>
+        /// <returns></returns>
         public override IDataProvider LoadDataProvider()
         {
 
@@ -19,6 +25,10 @@ namespace Nop.Data
 
             switch (providerName.ToLowerInvariant())
             {
+                //case "mysql":
+                //    return new MySqlDataProvider();
+                //case "oracle":
+                //    return new OracleDataProvider();
                 case "sqlserver":
                     return new SqlServerDataProvider();
                 case "sqlce":

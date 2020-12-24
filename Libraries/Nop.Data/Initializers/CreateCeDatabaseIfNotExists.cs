@@ -8,11 +8,14 @@ namespace Nop.Data.Initializers
     /// An implementation of IDatabaseInitializer that will recreate and optionally re-seed the
     /// database only if the database does not exist.
     /// To seed the database, create a derived class and override the Seed method.
+    /// IDatabaseInitializer的实现，它将重新创建并可选地重新种子
+    ///仅当数据库不存在时才使用。
+    ///要播种数据库，请创建一个派生类并覆盖Seed方法。
     /// </summary>
-    /// <typeparam name="TContext">The type of the context.</typeparam>
+    /// <typeparam name="TContext">The type of the context.上下文的类型。</typeparam>
     public class CreateCeDatabaseIfNotExists<TContext> : SqlCeInitializer<TContext> where TContext : DbContext
     {
-        #region Strategy implementation
+        #region Strategy implementation策略实施
 
         public override void InitializeDatabase(TContext context)
         {

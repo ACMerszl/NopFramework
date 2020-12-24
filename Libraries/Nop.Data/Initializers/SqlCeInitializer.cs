@@ -5,6 +5,10 @@ using System.IO;
 
 namespace Nop.Data.Initializers
 {
+    /// <summary>
+    /// sqlce数据库初始化
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class SqlCeInitializer<T> : IDatabaseInitializer<T> where T : DbContext
     {
         public abstract void InitializeDatabase(T context);
@@ -13,6 +17,8 @@ namespace Nop.Data.Initializers
 
         /// <summary>
         /// Returns a new DbContext with the same SqlCe connection string, but with the |DataDirectory| expanded
+        /// 返回一个新的DbContext，使用相同的SqlCe连接字符串，但是扩展了|数据目录|
+        /// 取代SqlCe连接
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
@@ -29,7 +35,7 @@ namespace Nop.Data.Initializers
             }
             return context;
         }
-
+        //替换数据目录
         private static string ReplaceDataDirectory(string inputString)
         {
             string str = null;

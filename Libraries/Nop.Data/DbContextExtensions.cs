@@ -9,22 +9,29 @@ using Nop.Domain;
 
 namespace Nop.Data
 {
+    /// <summary>
+    /// 数据库上下文扩展
+    /// </summary>
     public static class DbContextExtensions
     {
-        #region Utilities
+        #region Utilities本类自实现方法
 
         private static T InnerGetCopy<T>(IDbContext context, T currentCopy, Func<DbEntityEntry<T>, DbPropertyValues> func) where T : BaseEntity
         {
             //Get the database context
+            //获取数据库上下文
             DbContext dbContext = CastOrThrow(context);
 
             //Get the entity tracking object
+            //获取实体跟踪对象
             DbEntityEntry<T> entry = GetEntityOrReturnNull(currentCopy, dbContext);
 
             //The output 
+            //输出
             T output = null;
 
             //Try and get the values
+            //尝试得到这些值
             if (entry != null)
             {
                 DbPropertyValues dbPropertyValues = func(entry);
@@ -39,16 +46,21 @@ namespace Nop.Data
 
         /// <summary>
         /// Gets the entity or return null.
+        /// 获取实体或返回null。
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="currentCopy">The current copy.</param>
-        /// <param name="dbContext">The db context.</param>
+        /// <typeparam name="T">继承于基本类型</typeparam>
+        /// <param name="currentCopy">The current copy.当前的副本。</param>
+        /// <param name="dbContext">The db context.db上下文。</param>
         /// <returns></returns>
         private static DbEntityEntry<T> GetEntityOrReturnNull<T>(T currentCopy, DbContext dbContext) where T : BaseEntity
         {
             return dbContext.ChangeTracker.Entries<T>().FirstOrDefault(e => e.Entity == currentCopy);
         }
-
+        /// <summary>
+        /// 得到结果或者抛出异常
+        /// </summary>
+        /// <param name="context">数据库上下文</param>
+        /// <returns></returns>
         private static DbContext CastOrThrow(IDbContext context)
         {
             var output = context as DbContext;
@@ -67,10 +79,11 @@ namespace Nop.Data
 
         /// <summary>
         /// Loads the original copy.
+        /// 加载原始副本
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="context">The context.</param>
-        /// <param name="currentCopy">The current copy.</param>
+        /// <typeparam name="T">继承继承实体的类</typeparam>
+        /// <param name="context">The context.上下文</param>
+        /// <param name="currentCopy">The current copy.当前的副本。</param>
         /// <returns></returns>
         public static T LoadOriginalCopy<T>(this IDbContext context, T currentCopy) where T : BaseEntity
         {
@@ -79,8 +92,9 @@ namespace Nop.Data
 
         /// <summary>
         /// Loads the database copy.
+        /// 加载数据库副本。
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">继承继承实体的类</typeparam>
         /// <param name="context">The context.</param>
         /// <param name="currentCopy">The current copy.</param>
         /// <returns></returns>
@@ -91,9 +105,10 @@ namespace Nop.Data
 
         /// <summary>
         /// Drop a plugin table
+        /// 删除插件表
         /// </summary>
-        /// <param name="context">Context</param>
-        /// <param name="tableName">Table name</param>
+        /// <param name="context">Context，数据库上下文</param>
+        /// <param name="tableName">Table name，表名</param>
         public static void DropPluginTable(this DbContext context, string tableName)
         {
             if (context == null)
@@ -103,6 +118,7 @@ namespace Nop.Data
                 throw new ArgumentNullException("tableName");
 
             //drop the table
+            //删除表
             if (context.Database.SqlQuery<int>("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = {0}", tableName).Any<int>())
             {
                 var dbScript = "DROP TABLE [" + tableName + "]";
@@ -113,10 +129,11 @@ namespace Nop.Data
 
         /// <summary>
         /// Get table name of entity
+        /// 获取实体的表名
         /// </summary>
-        /// <typeparam name="T">Entity type</typeparam>
-        /// <param name="context">Context</param>
-        /// <returns>Table name</returns>
+        /// <typeparam name="T">Entity type，实体类型</typeparam>
+        /// <param name="context">Context，数据库上下文</param>
+        /// <returns>Table name表名</returns>
         public static string GetTableName<T>(this IDbContext context) where T : BaseEntity
         {
             //var tableName = typeof(T).Name;
@@ -124,13 +141,14 @@ namespace Nop.Data
 
             //this code works only with Entity Framework.
             //If you want to support other database, then use the code above (commented)
-
+            //此代码仅适用于EF实体框架。如果您想支持其他数据库，那么使用上面的代码(注释)
             var adapter = ((IObjectContextAdapter)context).ObjectContext;
             var storageModel = (StoreItemCollection)adapter.MetadataWorkspace.GetItemCollection(DataSpace.SSpace);
             var containers = storageModel.GetItems<EntityContainer>();
             var entitySetBase = containers.SelectMany(c => c.BaseEntitySets.Where(bes => bes.Name == typeof(T).Name)).First();
 
             // Here are variables that will hold table and schema name
+            //下面是保存表和模式名的变量
             string tableName = entitySetBase.MetadataProperties.First(p => p.Name == "Table").Value.ToString();
             //string schemaName = productEntitySetBase.MetadataProperties.First(p => p.Name == "Schema").Value.ToString();
             return tableName;
@@ -138,11 +156,13 @@ namespace Nop.Data
 
         /// <summary>
         /// Get column maximum length
+        /// 获取列的最大长度
         /// </summary>
         /// <param name="context">Context</param>
-        /// <param name="entityTypeName">Entity type name</param>
-        /// <param name="columnName">Column name</param>
-        /// <returns>Maximum length. Null if such rule does not exist</returns>
+        /// <param name="entityTypeName">Entity type name，实体类型名称</param>
+        /// <param name="columnName">Column name列名</param>
+        /// <returns>Maximum length. Null if such rule does not exist
+        /// 最大长度。如果该规则不存在，则为空</returns>
         public static int? GetColumnMaxLength(this IDbContext context, string entityTypeName, string columnName)
         {
             var rez = GetColumnsMaxLength(context, entityTypeName, columnName);
@@ -150,11 +170,11 @@ namespace Nop.Data
         }
 
         /// <summary>
-        /// Get columns maximum length
+        /// Get columns maximum length获取列的最大长度
         /// </summary>
         /// <param name="context">Context</param>
-        /// <param name="entityTypeName">Entity type name</param>
-        /// <param name="columnNames">Column names</param>
+        /// <param name="entityTypeName">Entity type name实体类型名称</param>
+        /// <param name="columnNames">Column names，列名</param>
         /// <returns></returns>
         public static IDictionary<string, int> GetColumnsMaxLength(this IDbContext context, string entityTypeName, params string[] columnNames)
         {
@@ -172,7 +192,7 @@ namespace Nop.Data
 
 
         /// <summary>
-        /// Get maximum decimal values
+        /// Get maximum decimal values获取最大十进制值
         /// </summary>
         /// <param name="context">Context</param>
         /// <param name="entityTypeName">Entity type name</param>
@@ -204,6 +224,7 @@ namespace Nop.Data
                 if (!match && entType != null)
                 {
                     //Is a fully qualified name....
+                    //一个名称是否完全限定
                     match = entType.Name == p.DeclaringType.Name;
                 }
 

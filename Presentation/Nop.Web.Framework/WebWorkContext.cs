@@ -9,24 +9,25 @@ namespace Nop.Web.Framework
 {
     /// <summary>
     /// Work context for web application
+    /// Web应用程序的工作环境
     /// </summary>
     public partial class WebWorkContext : IWorkContext
     {
         #region Const
-
+        //客户Cookie名称
         private const string CustomerCookieName = "Nop.customer";
 
         #endregion
 
         #region Fields
-
+        //HttpContext库
         private readonly HttpContextBase _httpContext;
         //private readonly IUserService _customerService;
         //private readonly IAuthenticationService _authenticationService;
         //private readonly ILanguageService _languageService;
         //private readonly LocalizationSettings _localizationSettings;
         //private readonly IUserAgentHelper _userAgentHelper;
-
+        //_缓存的客户
         private User _cachedCustomer;
         //private Language _cachedLanguage;
 
@@ -75,7 +76,7 @@ namespace Nop.Web.Framework
                 }
                 else
                 {
-                    int cookieExpires = 24 * 365; //TODO make configurable
+                    int cookieExpires = 24 * 365; //TODO make configurable使可配置
                     cookie.Expires = DateTime.Now.AddHours(cookieExpires);
                 }
 
@@ -83,7 +84,7 @@ namespace Nop.Web.Framework
                 _httpContext.Response.Cookies.Add(cookie);
             }
         }
-
+        //网址语言
         //protected virtual Language GetLanguageFromUrl()
         //{
         //    if (_httpContext == null || _httpContext.Request == null)
@@ -137,6 +138,7 @@ namespace Nop.Web.Framework
 
         /// <summary>
         /// Gets or sets the current customer
+        /// 获取或设置当前客户
         /// </summary>25141240
         public virtual User CurrentUser
         {

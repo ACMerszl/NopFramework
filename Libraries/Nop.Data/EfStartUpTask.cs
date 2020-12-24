@@ -4,6 +4,9 @@ using Nop.Core.Infrastructure;
 
 namespace Nop.Data
 {
+    /// <summary>
+    /// EF任务启动执行
+    /// </summary>
     public class EfStartUpTask : IStartupTask
     {
         public void Execute()
@@ -21,6 +24,7 @@ namespace Nop.Data
         public int Order
         {
             //ensure that this task is run first 
+            //确保该任务首先运行
             get { return -1000; }
         }
     }

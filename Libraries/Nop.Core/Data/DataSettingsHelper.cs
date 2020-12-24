@@ -11,6 +11,7 @@ namespace Nop.Core.Data
 
         /// <summary>
         /// Returns a value indicating whether database is already installed
+        /// 返回一个值，该值指示数据库是否已经安装
         /// </summary>
         /// <returns></returns>
         public static bool DatabaseIsInstalled()
@@ -25,6 +26,7 @@ namespace Nop.Core.Data
         }
 
         //Reset information cached in the "DatabaseIsInstalled" method
+        //重置缓存在“DatabaseIsInstalled（数据库已安装）”方法中的信息
         public static void ResetCache()
         {
             _databaseIsInstalled = null;

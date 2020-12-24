@@ -7,11 +7,12 @@ namespace Nop.Data
 {
     /// <summary>
     /// Queryable extensions
+    /// 查询扩展
     /// </summary>
     public static class QueryableExtensions
     {
         /// <summary>
-        /// Include
+        /// Include包括属性
         /// </summary>
         /// <typeparam name="T">Type</typeparam>
         /// <param name="queryable">Queryable</param>
